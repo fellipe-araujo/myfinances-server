@@ -1,6 +1,10 @@
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 
-import { MonthlyDebtProps, MonthlyExpensesProps } from '../utils/types';
+import {
+  MonthlyDebtProps,
+  MonthlyExpensesProps,
+  NewExpenseProps,
+} from '../utils/types';
 
 export async function getMonthlySheet(period: string) {
   const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_MONTHLY_ID);
@@ -80,4 +84,44 @@ export async function getPagesFromSheet() {
   }
 
   return periods;
+}
+
+export async function addItemInSheet(data: NewExpenseProps) {
+  const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_MONTHLY_ID);
+  await doc.useServiceAccountAuth({
+    client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL!,
+    private_key: String(process.env.GOOGLE_PRIVATE_KEY).replace(/\\n/g, '\n'),
+  });
+
+  await doc.loadInfo();
+
+  let sheet = doc.sheetsByIndex[Number(data.period)];
+
+  await sheet.loadCells('A1:G30')
+
+  if (data.person === 'person1') {
+    for (let i = 0; i < 30; i++) {
+      let cellExpense = sheet.getCell(i, 0)
+  
+      if (!cellExpense.value) {
+        let cellValue = sheet.getCell(i, 1)
+        cellExpense.value = data.expense
+        cellValue.value = data.value
+        break;
+      }
+    }
+  } else if (data.person === 'person2') {
+    for (let i = 0; i < 30; i++) {
+      let cellExpense = sheet.getCell(i, 5)
+  
+      if (!cellExpense.value) {
+        let cellValue = sheet.getCell(i, 6)
+        cellExpense.value = data.expense
+        cellValue.value = data.value
+        break;
+      }
+    }
+  }
+
+  await sheet.saveUpdatedCells();
 }
