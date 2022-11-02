@@ -20,4 +20,8 @@ sheetRoutes.get('/expenses-monthly/pages', (req: Request, res: Response) => {
   sheetController.pagesSheet(req, res);
 });
 
+sheetRoutes.post('/expenses-monthly/add-row', (req: Request, res: Response) => {
+  sheetController.addRow(req, res);
+});
+
 export default sheetRoutes;
