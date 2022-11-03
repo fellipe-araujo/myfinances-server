@@ -26,3 +26,10 @@ export interface MonthlyDebtProps {
   person: string;
   value: string;
 }
+
+export interface NewExpenseProps {
+  person: 'person1' | 'person2';
+  expense: string;
+  value: number;
+  period: string;
+}
